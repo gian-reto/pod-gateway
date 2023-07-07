@@ -50,11 +50,6 @@ if [ -n "$K8S_GW_IP" ]; then
     ip route add "$GATEWAY_IP" via "$K8S_GW_IP"
 fi
 
-# Make sure the k8s service ip range is routed to the k8s DNS server
-if [ -n "$K8S_DNS_IP" && -n "$K8S_GW_IP" ]; then
-    ip route add "$K8S_DNS_IP/16" via "$K8S_GW_IP" dev eth0
-fi
-
 # For debugging reasons print some info
 ip addr
 ip route

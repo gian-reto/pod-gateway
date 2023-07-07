@@ -20,6 +20,10 @@ else
   done
 fi
 
+# Derived settings, moved here to make sure they are set before removing the default GW
+K8S_DNS_IP="$(cut -d ' ' -f 1 <<< "$K8S_DNS_IPS")"
+GATEWAY_IP="$(dig +short "$GATEWAY_NAME" "@${K8S_DNS_IP}")"
+
 # Delete default GW to prevent outgoing traffic to leave this docker
 echo "Deleting existing default GWs"
 ip route del 0/0 || /bin/true
@@ -39,8 +43,6 @@ ip addr
 ip route
 
 # Derived settings
-K8S_DNS_IP="$(cut -d ' ' -f 1 <<< "$K8S_DNS_IPS")"
-GATEWAY_IP="$(dig +short "$GATEWAY_NAME" "@${K8S_DNS_IP}")"
 NAT_ENTRY="$(grep "^$(hostname) " /config/nat.conf || true)"
 VXLAN_GATEWAY_IP="${VXLAN_IP_NETWORK}.1"
 

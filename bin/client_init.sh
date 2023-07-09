@@ -24,6 +24,11 @@ fi
 K8S_DNS_IP="$(cut -d ' ' -f 1 <<< "$K8S_DNS_IPS")"
 GATEWAY_IP="$(dig +short "$GATEWAY_NAME" "@${K8S_DNS_IP}")"
 
+# Make sure the k8s service ip range is routed to the k8s DNS server
+if [ -n "$K8S_DNS_IP" && -n "$K8S_GW_IP" ]; then
+    ip route add "$K8S_DNS_IP/16" via "$K8S_GW_IP" dev eth0
+fi
+
 # Delete default GW to prevent outgoing traffic to leave this docker
 echo "Deleting existing default GWs"
 ip route del 0/0 || /bin/true
